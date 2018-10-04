@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Rest Countries jQuery</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="jquery-ui-1.12.1.custom/jquery-ui.css">
+	<style>
+		.coutry {
+			border: 1px solid #999;
+			min-height: 300px;
+		}
+
+		.flag {
+			width: 100%;
+			max-height: 150px;
+			box-shadow: 1px 1px 1px #999;
+		}
+
+		.euro-btn {
+			margin-top: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<h1>Rest Countries</h1>
+			<form>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Find a Country</label>
+					<input type="text" class="form-control" id="countryInput" placeholder="Enter Country">
+				</div>
+				<button type="button" id="submitCountry" class="btn btn-primary">Submit</button>
+			</form>
+			<button type="button" id="getEuro" class="btn btn-primary euro-btn">Show Euro</button>
+			<button type="button" id="showAll" class="btn btn-primary euro-btn">Show All</button>
+		</div>
+	</div>
+	<hr>
+	<div class="container">
+		<div class="row" id="therow"> </div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+		$(function () {
+			var $therow = $('#therow');
+
+			$.ajax({
+				type: 'get',
+				url: 'https://restcountries.eu/rest/v2/all',
+				success: function (countries) {
+					$.each(countries, function (i, country) {
+						$therow.append("<div class='col-md-3 coutry' id=" + i + "><h3>" + country.name + "</h3><img class='flag' src=" + country.flag + "><h4 class='curr'>" + country.currencies[0].code + "</h4></div>");
+					});
+				}
+			});
+
+			$.ajax({
+				type: 'get',
+				url: 'https://restcountries.eu/rest/v2/all',
+				success: function (countries) {
+					$.each(countries, function (i, country) {
+						var colist = [country.name];
+						$("#countryInput").autocomplete({
+							source: colist
+						});
+					});
+
+				}
+			});
+
+			$('#getEuro').click(function () {
+				$.ajax({
+					type: 'get',
+					url: 'https://restcountries.eu/rest/v2/all',
+					success: function (countries) {
+						$.each(countries, function (i, country) {
+							if (country.currencies[0].code != 'EUR') {
+								$('#' + i).hide();
+							}
+						});
+
+					}
+				});
+			});
+			$('#showAll').click(function () {
+				$.ajax({
+					type: 'get',
+					url: 'https://restcountries.eu/rest/v2/all',
+					success: function (countries) {
+						$.each(countries, function (i, country) {
+							$('#' + i).show();
+						});
+
+					}
+				});
+			});
+
+			$('#submitCountry').click(function () {
+				$.ajax({
+					type: 'get',
+					url: 'https://restcountries.eu/rest/v2/all',
+					success: function (countries) {
+						$.each(countries, function (i, country) {
+							var countryInput = $("#countryInput").val();
+							var country = country.name;
+							if (countryInput != country) {
+								$('#' + i).hide();
+							}
+
+						});
+
+					}
+				});
+			});
+		});
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+</body>
+
+</html>
